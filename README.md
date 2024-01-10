@@ -1,0 +1,2 @@
+# logrus-multihandler
+用于logrus的多路输出器，每个Logger可以向多个Writer以不同的Fromatter和不同的Level输出日志

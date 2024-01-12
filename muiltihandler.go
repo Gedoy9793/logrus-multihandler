@@ -3,6 +3,7 @@ package multihandler
 import (
 	"github.com/sirupsen/logrus"
 	"io"
+	"sync"
 )
 
 type Handler struct {
@@ -45,12 +46,20 @@ func NewHandler(formatter logrus.Formatter, level logrus.Level, writer io.Writer
 }
 
 func (h *MultiHandler) Format(e *logrus.Entry) ([]byte, error) {
+	waitGroup := sync.WaitGroup{}
+	waitGroup.Add(1)
 	for _, handler := range h.handlers {
 		if e.Level <= handler.Level {
 			newEntry := e.Dup()
 			newEntry.Logger = handler.Logger
-			go newEntry.Log(e.Level, e.Message)
+			waitGroup.Add(1)
+			go func() {
+				go newEntry.Log(e.Level, e.Message)
+				waitGroup.Done()
+			}()
 		}
 	}
+	waitGroup.Done()
+	waitGroup.Wait()
 	return make([]byte, 0), nil
 }

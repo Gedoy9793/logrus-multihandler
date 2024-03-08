@@ -47,7 +47,6 @@ func NewHandler(formatter logrus.Formatter, level logrus.Level, writer io.Writer
 
 func (h *MultiHandler) Format(e *logrus.Entry) ([]byte, error) {
 	waitGroup := sync.WaitGroup{}
-	waitGroup.Add(1)
 	for _, handler := range h.handlers {
 		if e.Level <= handler.Level {
 			newEntry := e.Dup()
@@ -59,7 +58,6 @@ func (h *MultiHandler) Format(e *logrus.Entry) ([]byte, error) {
 			}()
 		}
 	}
-	waitGroup.Done()
 	waitGroup.Wait()
 	return make([]byte, 0), nil
 }

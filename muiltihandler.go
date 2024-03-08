@@ -54,7 +54,7 @@ func (h *MultiHandler) Format(e *logrus.Entry) ([]byte, error) {
 			newEntry.Logger = handler.Logger
 			waitGroup.Add(1)
 			go func() {
-				go newEntry.Log(e.Level, e.Message)
+				newEntry.Log(e.Level, e.Message)
 				waitGroup.Done()
 			}()
 		}
